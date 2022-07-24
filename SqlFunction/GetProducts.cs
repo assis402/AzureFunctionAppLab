@@ -88,7 +88,7 @@ namespace SqlFunction
 
         private static SqlConnection GetConnection()
         {
-            var connectionString = "{sqldbconnectionstring}";
+            var connectionString = Environment.GetEnvironmentVariable("SQLAZURECONNSTR_SQLConnectionString");
             return new SqlConnection(connectionString);
         }
     }

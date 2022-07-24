@@ -14,8 +14,47 @@ namespace SqlFunction
 {
     public static class GetProducts
     {
+        [FunctionName("GetProduct")]
+        public static async Task<IActionResult> RunProduct(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            var productId = int.Parse(req.Query["id"]);
+
+            var statement = $"SELECT ProductID, ProductName, Quantity FROM Products WHERE ProductID = {productId}";
+
+            var connection = GetConnection();
+            connection.Open();
+
+            var command = new SqlCommand(statement, connection);
+
+            Product product;
+
+            try
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    product = new Product()
+                    {
+                        ProductId = reader.GetInt32(0),
+                        ProductName = reader.GetString(1),
+                        Quantity = reader.GetInt32(2)
+                    };
+                }
+
+                connection.Close();
+                return new OkObjectResult(product);
+            }
+            catch (Exception)
+            {
+                var response = "No records found";
+                connection.Close();
+                return new OkObjectResult(response);
+            }
+        }
+
         [FunctionName("GetProducts")]
-        public static async Task<IActionResult> Run(
+        public static async Task<IActionResult> RunProducts(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             ILogger log)
         {

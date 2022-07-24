@@ -49,7 +49,7 @@ namespace SqlFunction
             {
                 var response = "No records found";
                 connection.Close();
-                return new OkObjectResult(response);
+                return new OkObjectResult(JsonConvert.SerializeObject(response));
             }
         }
 
@@ -83,7 +83,7 @@ namespace SqlFunction
 
             connection.Close();
 
-            return new OkObjectResult(productList);
+            return new OkObjectResult(JsonConvert.SerializeObject(productList));
         }
 
         private static SqlConnection GetConnection()
